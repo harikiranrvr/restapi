@@ -23,14 +23,16 @@ jobs:
   docker:
     needs: build-test
     runs-on: ubuntu-latest
+    env:
+      IMAGE_TAG: ${{ secrets.REGISTRY && format('{0}/customer-api:{1}', secrets.REGISTRY, github.sha) || format('customer-api:{0}', github.sha) }}
     steps:
       - uses: actions/checkout@v3
       - name: Build Docker image
-        run: docker build -t ${{ secrets.REGISTRY }}/customer-api:${{ github.sha }} .
+        run: docker build -t "$IMAGE_TAG" .
         working-directory: customer-api
       - name: Log in to registry (if credentials provided)
         run: |
-          if [ -n "${{ secrets.REGISTRY_USERNAME }}" ] && [ -n "${{ secrets.REGISTRY_PASSWORD }}" ]; then
+          if [ -n "${{ secrets.REGISTRY_USERNAME }}" ] && [ -n "${{ secrets.REGISTRY_PASSWORD }}" ] && [ -n "${{ secrets.REGISTRY }}" ]; then
             echo "${{ secrets.REGISTRY_PASSWORD }}" | docker login ${{ secrets.REGISTRY }} -u ${{ secrets.REGISTRY_USERNAME }} --password-stdin
           else
             echo "No registry credentials provided, skipping login."
@@ -38,8 +40,8 @@ jobs:
         working-directory: customer-api
       - name: Push Docker image (if credentials provided)
         run: |
-          if [ -n "${{ secrets.REGISTRY_USERNAME }}" ] && [ -n "${{ secrets.REGISTRY_PASSWORD }}" ]; then
-            docker push ${{ secrets.REGISTRY }}/customer-api:${{ github.sha }}
+          if [ -n "${{ secrets.REGISTRY_USERNAME }}" ] && [ -n "${{ secrets.REGISTRY_PASSWORD }}" ] && [ -n "${{ secrets.REGISTRY }}" ]; then
+            docker push "$IMAGE_TAG"
           else
             echo "No registry credentials provided, skipping push."
           fi
@@ -49,6 +51,8 @@ jobs:
     needs: docker
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
+    env:
+      IMAGE_TAG: ${{ secrets.REGISTRY && format('{0}/customer-api:{1}', secrets.REGISTRY, github.sha) || format('customer-api:{0}', github.sha) }}
     steps:
       - uses: actions/checkout@v3
       - name: Set up kubectl
@@ -59,5 +63,5 @@ jobs:
         env:
           KUBECONFIG: ${{ secrets.KUBECONFIG }}
         run: |
-          kubectl set image deployment/customer-api customer-api=${{ secrets.REGISTRY }}/customer-api:${{ github.sha }}
+          kubectl set image deployment/customer-api customer-api="$IMAGE_TAG"
           kubectl apply -f customer-api/k8s-deployment.yaml 
