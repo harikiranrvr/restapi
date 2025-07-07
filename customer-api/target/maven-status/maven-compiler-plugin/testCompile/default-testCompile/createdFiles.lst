@@ -1,2 +1,3 @@
 com/example/customer_api/repository/CustomerRepositoryTest.class
 com/example/customer_api/CustomerApiApplicationTests.class
+com/example/customer_api/CustomerApiIntegrationTest.class
