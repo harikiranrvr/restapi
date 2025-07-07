@@ -1,6 +1,6 @@
 package com.example.customer_api.entity;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
