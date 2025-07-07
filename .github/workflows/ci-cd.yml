@@ -26,12 +26,20 @@ jobs:
       - uses: actions/checkout@v3
       - name: Build Docker image
         run: docker build -t ${{ secrets.REGISTRY }}/customer-api:${{ github.sha }} .
-      - name: Log in to registry
-        if: ${{ secrets.REGISTRY_USERNAME != '' && secrets.REGISTRY_PASSWORD != '' }}
-        run: echo ${{ secrets.REGISTRY_PASSWORD }} | docker login ${{ secrets.REGISTRY }} -u ${{ secrets.REGISTRY_USERNAME }} --password-stdin
-      - name: Push Docker image
-        if: ${{ secrets.REGISTRY_USERNAME != '' && secrets.REGISTRY_PASSWORD != '' }}
-        run: docker push ${{ secrets.REGISTRY }}/customer-api:${{ github.sha }}
+      - name: Log in to registry (if credentials provided)
+        run: |
+          if [ -n "${{ secrets.REGISTRY_USERNAME }}" ] && [ -n "${{ secrets.REGISTRY_PASSWORD }}" ]; then
+            echo "${{ secrets.REGISTRY_PASSWORD }}" | docker login ${{ secrets.REGISTRY }} -u ${{ secrets.REGISTRY_USERNAME }} --password-stdin
+          else
+            echo "No registry credentials provided, skipping login."
+          fi
+      - name: Push Docker image (if credentials provided)
+        run: |
+          if [ -n "${{ secrets.REGISTRY_USERNAME }}" ] && [ -n "${{ secrets.REGISTRY_PASSWORD }}" ]; then
+            docker push ${{ secrets.REGISTRY }}/customer-api:${{ github.sha }}
+          else
+            echo "No registry credentials provided, skipping push."
+          fi
 
   deploy:
     needs: docker
