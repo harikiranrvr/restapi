@@ -131,7 +131,7 @@ class CustomerRepositoryTest {
         assertThat(updatedCustomer.getId()).isEqualTo(customerId);
         assertThat(updatedCustomer.getFirstName()).isEqualTo("Jane");
         assertThat(updatedCustomer.getPhoneNumber()).isEqualTo("9876543210");
-        assertThat(updatedCustomer.getEmail()).isEqualTo("john.doe@example.com"); // unchanged
+        assertThat(updatedCustomer.getEmail()).isEqualTo("john.doe@example.com");
     }
 
     @Test
@@ -249,5 +249,34 @@ class CustomerRepositoryTest {
         assertThat(retrievedCustomers).hasSize(3);
         assertThat(retrievedCustomers).extracting("email")
                 .containsExactlyInAnyOrder("alice.smith@example.com", "bob.johnson@example.com", "charlie.brown@example.com");
+    }
+
+    @Test
+    @DisplayName("Should throw when saving customer with null required fields")
+    void testSaveCustomerWithNullRequiredFields() {
+        Customer customer = Customer.builder()
+                .firstName(null) // required
+                .lastName(null)  // required
+                .email(null)     // required
+                .phoneNumber(null) // required
+                .build();
+        assertThatThrownBy(() -> {
+            customerRepository.save(customer);
+            customerRepository.flush();
+        }).isInstanceOf(Exception.class); // Could be DataIntegrityViolationException or PersistenceException
+    }
+
+    @Test
+    @DisplayName("Should throw when updating customer with null required fields")
+    void testUpdateCustomerWithNullRequiredFields() {
+        Customer savedCustomer = customerRepository.save(testCustomer);
+        savedCustomer.setFirstName(null);
+        savedCustomer.setLastName(null);
+        savedCustomer.setEmail(null);
+        savedCustomer.setPhoneNumber(null);
+        assertThatThrownBy(() -> {
+            customerRepository.save(savedCustomer);
+            customerRepository.flush();
+        }).isInstanceOf(Exception.class);
     }
 } 
