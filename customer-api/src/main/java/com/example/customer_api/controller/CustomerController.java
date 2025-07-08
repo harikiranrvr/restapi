@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import javax.validation.Valid;
 
 import java.util.List;
 import java.util.UUID;
@@ -38,7 +39,7 @@ public class CustomerController {
     }
 
     @PostMapping
-    public ResponseEntity<Customer> createCustomer(@RequestBody Customer customer) {
+    public ResponseEntity<Customer> createCustomer(@Valid @RequestBody Customer customer) {
         Customer saved = customerRepository.save(customer);
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
@@ -63,7 +64,7 @@ public class CustomerController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Customer> updateCustomer(@PathVariable("id") UUID id, @RequestBody Customer updatedCustomer) {
+    public ResponseEntity<Customer> updateCustomer(@PathVariable("id") UUID id, @Valid @RequestBody Customer updatedCustomer) {
         logger.info("Update requested for ID: {}", id);
         logger.info("Update data: firstName={}, lastName={}, email={}", 
                    updatedCustomer.getFirstName(), updatedCustomer.getLastName(), updatedCustomer.getEmail());
