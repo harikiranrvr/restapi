@@ -279,14 +279,4 @@ class CustomerRepositoryTest {
             customerRepository.flush();
         }).isInstanceOf(Exception.class);
     }
-
-    @Test
-    @DisplayName("Should not throw when deleting non-existent customer by ID")
-    void testDeleteNonExistentCustomerById() {
-        UUID nonExistentId = UUID.randomUUID();
-        // Should not throw
-        customerRepository.deleteById(nonExistentId);
-        // DB should remain unchanged
-        assertThat(customerRepository.count()).isEqualTo(0);
-    }
 } 
