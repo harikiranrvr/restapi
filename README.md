@@ -219,3 +219,17 @@ For more details on endpoints and usage, see the [API Documentation](./customer-
 ---
 ## Step 7: App Integration
 - New application is created and documentation for this step is mentioned here [customer-api-client](https://github.com/harikiranrvr/restapi/tree/main/customer-api-client)
+
+
+## For Update and Delete Operation:
+### Known Issues
+
+#### Update Operation
+The update operation currently has a known issue where the repository's `findById` method cannot locate existing customers during update operations, despite the get-by-id and list endpoints working correctly. This appears to be related to JPA persistence context or transaction management.
+
+#### Delete Operation
+The delete operation has a similar issue where `existsById` returns false for existing customers, preventing successful deletion.
+
+**Workaround:** For now, consider using the create operation to add new customers, as the read operations work correctly. Manual database cleanup may be required for customer removal for delete operation
+
+**Status:** Under investigation - JPA/Hibernate persistence context issue
