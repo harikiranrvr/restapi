@@ -3,7 +3,7 @@
 This is a Java 11 command-line application that consumes the Customer REST API.
 
 ## Build
-
+cd restapi/customer-api-client
 From the `customer-api-client` directory:
 
 ```sh
