@@ -4,10 +4,107 @@ Backend mini project
 ## Quickstart
 
 **Prerequisites:**
-- Java 11 or higher
-- Maven 3.6+ (or use the included Maven wrapper)
-- (Optional) Docker, if you want to run the containerized version
+Absolutely! Here are the **prerequisites installation instructions for Java 11, Maven, and Docker** for **Windows, Mac, and Ubuntu/Linux**—formatted for direct copy-paste into your README:
 
+---
+
+## Prerequisites
+
+### Java 11 or higher
+
+- **Windows:**
+  - Download the [OpenJDK 11 MSI installer](https://adoptium.net/temurin/releases/?version=11) (choose MSI for easy install).
+  - Run the installer and follow the prompts.
+  - (Optional) Set the `JAVA_HOME` environment variable to the JDK install path.
+  - Verify installation:
+     ```cmd
+     java -version
+     ```
+
+- **Mac (Homebrew):**
+  ```sh
+  brew install openjdk@11
+  ```
+  Add to your shell profile (if needed):
+  ```sh
+  echo 'export PATH="/usr/local/opt/openjdk@11/bin:$PATH"' >> ~/.zshrc
+  source ~/.zshrc
+  ```
+
+- **Ubuntu/Linux:**
+  ```sh
+  sudo apt update
+  sudo apt install openjdk-11-jdk
+  java -version
+  ```
+
+---
+
+### Maven 3.6+ (or use the included Maven wrapper)
+
+- **Windows:**
+  - Download the [Maven zip archive](https://maven.apache.org/download.cgi).
+  - Extract to a folder (e.g., `C:\Program Files\Apache\maven`).
+  - Add the `bin` directory to your `PATH` environment variable.
+  - Verify installation:
+     ```cmd
+     mvn -version
+     ```
+
+- **Mac (Homebrew):**
+  ```sh
+  brew install maven
+  mvn -version
+  ```
+
+- **Ubuntu/Linux:**
+  ```sh
+  sudo apt update
+  sudo apt install maven
+  mvn -version
+  ```
+
+---
+
+### Docker (optional, for containerization)
+
+- **Windows:**
+ - Download and install [Docker Desktop for Windows](https://docs.docker.com/desktop/install/windows-install/).
+ - Start Docker Desktop.
+ - Verify installation:
+     ```cmd
+     docker --version
+     ```
+
+- **Mac:**
+  - Download and install [Docker Desktop for Mac](https://docs.docker.com/desktop/install/mac-install/).
+  - Start Docker Desktop.
+  - Verify installation:
+     ```sh
+     docker --version
+     ```
+
+- **Ubuntu/Linux:**
+  ```sh
+  sudo apt update
+  sudo apt install \
+    ca-certificates \
+    curl \
+    gnupg
+  sudo install -m 0755 -d /etc/apt/keyrings
+  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+  echo \
+    "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+    $(lsb_release -cs) stable" | \
+    sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+  sudo apt update
+  sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+  docker --version
+  ```
+
+---
+- For more details, see the official documentation for [Java](https://adoptium.net/), [Maven](https://maven.apache.org/install.html), and [Docker](https://docs.docker.com/get-docker/).
+---
 **How to Run Locally:**
 1. Clone the repository:
    ```sh
