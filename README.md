@@ -142,32 +142,6 @@ curl -X POST http://localhost:8080/customers \
 
 ## Step 1: Build an API
 ### **Customer CRUD Operations**
-- **Create a customer:**  
-  `POST /customers`  
-  Create a new customer.  
-  **Body:** JSON with firstName, lastName, email, phoneNumber (middleName optional).
-
-- **List all customers:**  
-  `GET /customers`  
-  Retrieve all customers.
-
-- **Get a customer by ID:**  
-  `GET /customers/{id}`  
-  Retrieve a customer by their UUID.
-
-- **Update a customer:**  
-  `PUT /customers/{id}`  
-  Update an existing customer’s details.  
-  **Body:** JSON with updated fields.
-
-- **Delete a customer:**  
-  `DELETE /customers/{id}`  
-  Remove a customer by their UUID.
-  
-### **Other API Features**
-- **Find by email:**  
-  `GET /customers?email={email}`  
-  (If implemented) Retrieve a customer by their email address.
 
 - **Health and Metrics:**  
   - `GET /actuator/health` — Health check endpoint  
@@ -181,19 +155,25 @@ curl -X POST http://localhost:8080/customers \
 ### **How to Run**
 See the [Quickstart](#quickstart) section above.
 
-### **API Contract**
-All requests and responses use JSON.  
-The customer object structure:
-```json
-{
-  "id": "uuid-string",
-  "firstName": "string",
-  "middleName": "string or null",
-  "lastName": "string",
-  "email": "string",
-  "phoneNumber": "string"
-}
-```
+## Entity Schema
+
+| Attribute     | Type   | Constraints         | Status |
+|---------------|--------|--------------------|--------|
+| Id            | UUID   | Primary Key        | ✅     |
+| First Name    | String | Required           | ✅     |
+| Middle Name   | String | Optional           | ✅     |
+| Last Name     | String | Required           | ✅     |
+| Email Address | String | Unique, Required   | ✅     |
+| Phone Number  | String | Required           | ✅     |
+
+## API Endpoints
+
+- `GET /customers` - Get all customers
+- `GET /customers/{id}` - Get customer by ID
+- `GET /customers?email={email}` - Get customer by email
+- `POST /customers` - Create new customer
+- `PUT /customers/{id}` - Update customer (see known issues)
+- `DELETE /customers/{id}` - Delete customer
 For more details on endpoints and usage, see the [API Documentation](./customer-api/README.md) or use the `/actuator` endpoints for health and metrics.
 
 ---
@@ -224,12 +204,33 @@ For more details on endpoints and usage, see the [API Documentation](./customer-
 ## For Update and Delete Operation:
 ### Known Issues
 
-#### Update Operation
-The update operation currently has a known issue where the repository's `findById` method cannot locate existing customers during update operations, despite the get-by-id and list endpoints working correctly. This appears to be related to JPA persistence context or transaction management.
+Both the update and delete endpoints have a known JPA persistence context issue where the repository's `findById` and `existsById` methods cannot locate existing customers, even though they exist and can be found by the get-by-id endpoint and list endpoint. This appears to be related to transaction boundaries or entity state management in the Spring Data JPA configuration.
 
-#### Delete Operation
-The delete operation has a similar issue where `existsById` returns false for existing customers, preventing successful deletion.
+**Working Operations:**
+- ✅ **Create Customer** - POST `/customers`
+- ✅ **Read Customer by ID** - GET `/customers/{id}`
+- ✅ **Read All Customers** - GET `/customers`
+- ✅ **Read Customer by Email** - GET `/customers?email={email}`
 
-**Workaround:** For now, consider using the create operation to add new customers, as the read operations work correctly. Manual database cleanup may be required for customer removal for delete operation
+**Workaround:** For now, updates and deletes can be performed by:
+1. Using the list endpoint to get all customers
+2. Creating new customers with updated data (for updates)
+3. The delete operation would require a different approach or database-level operations
+
+**Technical Details:**
+- The get-by-id and list endpoints successfully find customers
+- The update and delete endpoints' repository calls return empty/false for the same IDs
+- This suggests a transaction or entity state management issue
+- Would require deeper investigation of JPA configuration and transaction management
+- The issue affects `findById()`, `existsById()`, and related repository methods in certain contexts
 
 **Status:** Under investigation - JPA/Hibernate persistence context issue
+
+## Technology Stack
+
+- Java 11
+- Spring Boot 2.7.18
+- Spring Data JPA
+- H2 Database (in-memory)
+- Maven
+- JUnit 5
